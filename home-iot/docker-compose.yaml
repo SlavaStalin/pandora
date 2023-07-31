@@ -1,0 +1,30 @@
+version: '3'
+services:
+  # HomeAssistant
+  homeassistant:
+    container_name: home-assistant
+    image: "homeassistant/home-assistant:rc"
+    volumes:
+      # Local path where your home assistant config will be stored
+      - ./config/home-assistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    ports:
+      - 8124:8123
+    privileged: true
+    depends_on:
+      - eclipse-mosquitto # aka mosquitto-mqtt is optional (only if you want to add Zigbee devices and have a zigbee sniffer attached).
+
+
+
+  # eclipse-mosquitto (MQTT broker)
+  eclipse-mosquitto:
+    container_name: eclipse-mosquitto
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
